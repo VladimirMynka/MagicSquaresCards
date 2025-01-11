@@ -2,7 +2,7 @@
 ### Info type
 3_tfmn
 ### Keywords
-~fmn8Свойства, ~fmn-функция, ~tfmn-функция, ~магические квадраты, ~свойства
+#fmn8Свойства, #fmn-функция, #tfmn-функция, #магические квадраты, #свойства
 ### Text
 Конечно, мы хотим иметь решение уравнения
 $$tfmn(a, b) = tfmn(c, d)$$
@@ -13,4 +13,3 @@ $$tfmn(a, b) = tfmn(c, d)$$
 4.  $f(a + b, a - b) = 4f(a, b)$
 5.  $f(a + b, a) = f(a + b, b) + f(a, b)$
 6.  $\{f(a, b) = f(a, c); b \ne c; \text{НОД}(a, b) = \text{НОД}(a, c) = 1\} \Leftrightarrow \{a = m^2 + mn + n^2; b = (n - m)(n + m); c = m(n + 2n)\}$
-```

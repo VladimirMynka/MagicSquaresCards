@@ -53,7 +53,8 @@ def process_messages(messages, output_dir):
             
             for card_text in card_texts:
                 title, info_type, tag, keywords, approves, text = parse_card(card_text)
-                filename = save_card(output_dir, tag, card_text.replace("'''", "```"), info_type)
+                card_text = card_text.replace("```", "").replace("'''", "```").replace('~~', '#').replace('~', '#').strip()
+                filename = save_card(output_dir, tag, card_text, info_type)
                 csv_writer.writerow([filename, title, info_type, tag, ', '.join(keywords), approves])
                 print(f"Processed and saved: {title}")
                 
