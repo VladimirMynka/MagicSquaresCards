@@ -1,6 +1,7 @@
-import os
 import csv
+import os
 import re
+
 
 def parse_card(card_text):
     """Парсит текст карточки и извлекает мета-информацию."""
@@ -22,7 +23,11 @@ def parse_card(card_text):
 def save_card(card_dir, tag, card_text, info_type):
     """Сохраняет весь markdown текст карточки в файл."""
     directory = os.path.join(card_dir, info_type)
+    inner_file = os.path.join(directory, f'{info_type}.md')
     os.makedirs(directory, exist_ok=True)
+    if not os.path.exists(inner_file):
+        with open(inner_file, 'w', encoding='utf-8') as f:
+            f.write(f"# {info_type}\n\n")
     filename = f"{tag.replace(' ', '_')}.md"
     filepath = os.path.join(directory, filename)
     with open(filepath, 'w', encoding='utf-8') as f:
@@ -53,7 +58,24 @@ def process_messages(messages, output_dir):
             
             for card_text in card_texts:
                 title, info_type, tag, keywords, approves, text = parse_card(card_text)
-                card_text = card_text.replace("```", "").replace("'''", "```").replace('~~', '#').replace('~', '#').strip()
+                # Replace ~~word with [[word]] pattern
+                card_text = re.sub(r'~~(\w+)', r'[[\1]]', card_text)
+                
+                # Replace spaces with underscores and ~ with # in patterns like ~.*,, but only in Keywords section
+                card_text = re.sub(r'(### Keywords\n)(.*?)(###|$)', 
+                    lambda m: m.group(1) + re.sub(r'~([^,\n]*)(,|\n)', 
+                        lambda n: '#' + n.group(1).replace(' ', '_') + n.group(2), 
+                        m.group(2)
+                    ) + (m.group(3) or ''), 
+                    card_text, 
+                    flags=re.DOTALL
+                )
+                
+                # Wrap info_type value in [[]]
+                card_text = re.sub(r'(### Info type\n)(.+)', r'\1[[\2]]', card_text)
+                
+                # Replace remaining ~ with #
+                card_text = card_text.replace("```", "").replace("'''", "```").replace('~', '#').strip()
                 filename = save_card(output_dir, tag, card_text, info_type)
                 csv_writer.writerow([filename, title, info_type, tag, ', '.join(keywords), approves])
                 print(f"Processed and saved: {title}")
